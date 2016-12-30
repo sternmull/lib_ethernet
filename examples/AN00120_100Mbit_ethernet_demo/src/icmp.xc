@@ -245,6 +245,9 @@ void icmp_server(client ethernet_cfg_if cfg,
                  otp_ports_t &otp_ports)
 {
   unsigned char mac_address[6];
+  unsigned int recvBytes = 0;
+  unsigned int time;
+  timer tmr;
   ethernet_macaddr_filter_t macaddr_filter;
 
   // Get the mac address from OTP and set it in the ethernet component
@@ -265,6 +268,7 @@ void icmp_server(client ethernet_cfg_if cfg,
   cfg.add_ethertype_filter(index, 0x0800);
 
   debug_printf("Test started\n");
+  tmr :> time;
   while (1)
   {
     select {
@@ -276,6 +280,8 @@ void icmp_server(client ethernet_cfg_if cfg,
 
       if (packet_info.type != ETH_DATA)
         continue;
+
+      recvBytes += packet_info.len;
 
       if (is_valid_arp_packet(rxbuf, packet_info.len, ip_address))
       {
@@ -290,6 +296,12 @@ void icmp_server(client ethernet_cfg_if cfg,
         debug_printf("ICMP response sent\n");
       }
       break;
+    case tmr when timerafter(time) :> void:
+        time += XS1_TIMER_MHZ * 1000 * 1000;
+        debug_printf("received B/s second: %u\n", recvBytes);
+        debug_printf("received Mbit/s second: %u\n", recvBytes >> 17);
+        recvBytes = 0;
+        break;
     }
   }
 }

@@ -29,7 +29,7 @@ port p_smi_mdc    = on tile[1]: XS1_PORT_1N;
 // These ports are for accessing the OTP memory
 otp_ports_t otp_ports = on tile[0]: OTP_PORTS_INITIALIZER;
 
-static unsigned char ip_address[4] = {192, 168, 1, 178};
+static unsigned char ip_address[4] = {192, 168, 0, 125};
 
 // An enum to manage the array of connections from the ethernet component
 // to its clients.

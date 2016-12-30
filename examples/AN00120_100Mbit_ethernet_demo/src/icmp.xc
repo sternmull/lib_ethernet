@@ -295,6 +295,14 @@ void icmp_server(client ethernet_cfg_if cfg,
         tx.send_packet(txbuf, len, ETHERNET_ALL_INTERFACES);
         debug_printf("ICMP response sent\n");
       }
+
+      {
+          timer tmr;
+          unsigned t;
+          tmr :> t;
+          tmr when timerafter(t + XS1_TIMER_MHZ * 200) :> void;
+      }
+
       break;
     case tmr when timerafter(time) :> void:
         time += XS1_TIMER_MHZ * 1000 * 1000;
